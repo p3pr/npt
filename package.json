@@ -8,8 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git@github.com:p3pr/npt.git"
   },
   "author": "p3pr",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.2"
+  }
 }
