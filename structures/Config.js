@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 class Config {
     constructor() {
         this.server = "http://localhost:3000";
@@ -39,6 +41,10 @@ class Config {
 
     getArgs() {
         return this.args;
+    }
+
+    save() {
+        fs.writeFileSync('./data/config.json', JSON.stringify(this.toJSON()));
     }
 }
 

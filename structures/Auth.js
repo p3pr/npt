@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 class Config {
     constructor() {
         this.user = "";
@@ -25,6 +27,10 @@ class Config {
             user: this.user,
             key: this.key
         };
+    }
+
+    save() {
+        fs.writeFileSync('./data/auth.json', JSON.stringify(this.toJSON()));
     }
 }
 

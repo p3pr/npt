@@ -6,6 +6,7 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
+const axios = require('axios');
 
 module.exports = new Function({
     async run() {
@@ -23,10 +24,25 @@ module.exports = new Function({
             Auth.setUser(answer);
             rl.stdoutMuted = true;
             rl.question(Chalk.yellow('Please enter your password: '), (answer) => {
-                // TODO: post request to server to authenticate
-                console.log(Chalk.green('Authenticating...'));
-                fs.writeFileSync(authPath, JSON.stringify(Auth.toJSON()));
                 rl.close();
+                console.log();
+                console.log(Chalk.green('Authenticating...'));
+                axios.post(Config.getServer() + '/api/v1/auth', {
+                    username: Auth.getUser(),
+                    password: answer
+                }).then(async (response) => {
+                    let json = response.data;
+                    if(json.error !== undefined) {
+                        console.log(Chalk.red('Error: ' + json.error));
+                        return;
+                    }
+                    console.log(Chalk.green('Authenticated! Have fun using npt!'));
+                    Auth.setKey(json.key);
+                    Auth.save();
+                    Config.setAuthenticated(true);
+                    Config.save();
+                    process.exit(1);
+                })
             });
             rl._writeToOutput = function _writeToOutput(stringToWrite) {
                 if (rl.stdoutMuted)
