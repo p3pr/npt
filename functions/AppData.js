@@ -17,7 +17,6 @@ module.exports = new Function({
         }
         Config.convert(JSON.parse(fs.readFileSync(configPath).toString()));
         Config.setArgs(process.argv);
-        console.log(Chalk.green('Config loaded!'));
         return true;
     }
 }, "Load config");

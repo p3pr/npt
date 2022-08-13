@@ -15,6 +15,11 @@ async function run() {
         return false;
     }
     let valid = false;
+    const auth = JSON.parse(fs.readFileSync("./data/auth.json").toString());
+    const Auth = require("./structures/Auth").getInstance();
+    Auth.setUser(auth.user);
+    Auth.setKey(auth.key);
+    Auth.setId(auth.id);
     fs.readdirSync(`./functions/cli/`).filter(file => file.endsWith('.js')).forEach(file => {
         if(file.split('.')[0] === Config.getArgs()[1]) {
             const cliFunction = require(`./functions/cli/${file}`);

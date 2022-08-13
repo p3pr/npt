@@ -38,6 +38,7 @@ module.exports = new Function({
                     }
                     console.log(Chalk.green('Authenticated! Have fun using npt!'));
                     Auth.setKey(json.key);
+                    Auth.setId(json.id);
                     Auth.save();
                     Config.setAuthenticated(true);
                     Config.save();

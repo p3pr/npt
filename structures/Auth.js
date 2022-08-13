@@ -4,6 +4,7 @@ class Config {
     constructor() {
         this.user = "";
         this.key = "";
+        this.id = 0;
     }
 
     setUser(user) {
@@ -14,6 +15,10 @@ class Config {
         this.key = key;
     }
 
+    setId(id) {
+        this.id = id;
+    }
+
     getUser() {
         return this.user;
     }
@@ -22,10 +27,15 @@ class Config {
         return this.key;
     }
 
+    getId() {
+        return this.id;
+    }
+
     toJSON() {
         return {
             user: this.user,
-            key: this.key
+            key: this.key,
+            id: this.id
         };
     }
 
