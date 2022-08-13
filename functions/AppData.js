@@ -20,4 +20,4 @@ module.exports = new Function({
         console.log(Chalk.green('Config loaded!'));
         return true;
     }
-});
+}, "Load config");

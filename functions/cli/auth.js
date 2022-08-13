@@ -52,4 +52,4 @@ module.exports = new Function({
             };
         });
     }
-});
+}, "Authenticate with the server", "");
