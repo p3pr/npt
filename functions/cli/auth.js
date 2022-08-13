@@ -1,4 +1,4 @@
-const Function = require('../structures/Function');
+const Function = require('../../structures/Function');
 const fs = require('fs');
 const Chalk = require("chalk");
 const readline = require('readline');
@@ -10,8 +10,8 @@ const axios = require('axios');
 
 module.exports = new Function({
     async run() {
-        const Config = require('../structures/Config').getInstance();
-        const Auth = require('../structures/Auth').getInstance();
+        const Config = require('../../structures/Config').getInstance();
+        const Auth = require('../../structures/Auth').getInstance();
         const authPath = './data/auth.json';
         if(!fs.existsSync(authPath)) {
             console.log(Chalk.yellow('Creating auth.json file...'));

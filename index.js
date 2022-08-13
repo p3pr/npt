@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const AppData = require("./functions/AppData");
 const Chalk = require("chalk");
+const fs = require("fs");
 
 async function run() {
     await AppData.run();
@@ -8,16 +9,24 @@ async function run() {
     if(Config.getArgs()[0].includes("node")) {
         Config.setArgs(Config.getArgs().slice(1));
     }
-    if(Config.getArgs()[1] === "auth") {
-        console.log(Chalk.green("Beginning authentication..."));
-        const Auth = require("./functions/Auth");
-        await Auth.run();
-    } else {
-        if(!Config.getAuthenticated()) {
-            console.log(Chalk.red('Please authenticate yourself!'));
-            console.log(Chalk.blueBright('Use the command "npt auth"'));
-            return false;
+    if(!Config.getAuthenticated()) {
+        console.log(Chalk.red('Please authenticate yourself!'));
+        console.log(Chalk.blueBright('Use the command "npt auth"'));
+        return false;
+    }
+    let valid = false;
+    fs.readdirSync(`./functions/cli/`).filter(file => file.endsWith('.js')).forEach(file => {
+        if(file.split('.')[0] === Config.getArgs()[1]) {
+            const cliFunction = require(`./functions/cli/${file}`);
+            cliFunction.run();
+            valid = true;
         }
+    });
+    if(!valid) {
+        if(Config.getArgs()[1] !== undefined) {
+            console.log(Chalk.red('Invalid command!'));
+        }
+        console.log(Chalk.blueBright('Use the command "npt help"'));
     }
 }
 
