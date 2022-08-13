@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const AppData = require("./functions/AppData");
 const Chalk = require("chalk");
 

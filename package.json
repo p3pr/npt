@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git@github.com:p3pr/npt.git"
   },
+  "bin": {
+    "npt": "./index.js"
+  },
   "author": "p3pr",
   "license": "ISC",
   "dependencies": {
