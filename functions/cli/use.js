@@ -6,6 +6,7 @@ const axios = require('axios');
 const AdmZip = require('adm-zip');
 const path = require('path');
 const FormData = require('form-data');
+const https = require('http');
 
 module.exports = new Function({
     async run() {
@@ -35,21 +36,63 @@ module.exports = new Function({
         if(!fs.existsSync(Config.getArgs()[3])) {
             fs.mkdirSync(path.join(Config.getArgs()[3]));
         }
-        const zipReq = await axios.post(Config.getServer() + '/api/v1/clone', {
-            template: Config.getArgs()[2],
-            userId: Auth.getId(),
-            key: Auth.getKey()
-        }, {
-            responseType: 'stream'
-        });
-        if(zipReq.error !== undefined) {
-            console.log(Chalk.red('Error: ' + zipReq.error));
-            process.exit(1);
+        let port = Config.getServer();
+        if(port.split(':').length === 3) {
+            port = parseInt(port.split(':')[2]);
+        } else {
+            if(port.startsWith('http://')) {
+                port = 80;
+            } else {
+                port = 443;
+            }
         }
-        const writer = fs.createWriteStream(Config.getArgs()[2] + '/template.zip');
-        zipReq.data.pipe(writer);
-        const zip = new AdmZip(Config.getArgs()[2] + '.zip');
-        console.log(zip.getEntries());
-        process.exit(1);
+        let server = Config.getServer();
+        if(server.split(':').length === 3) {
+            server = server.split(':')[1];
+        }
+        if(server.startsWith('//')) {
+            server = Config.getServer().split('//')[0] + server;
+        }
+        let postData = JSON.stringify({
+            'template': Config.getArgs()[2],
+            'userId': Auth.getId(),
+            'key': Auth.getKey()
+        });
+        let options = {
+            hostname: "localhost",
+            port: 3000,
+            path: '/api/v1/clone',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': postData.length
+            }
+        };
+        const req = await https.request(options, (res) => {
+            res.on('data', (d) => {
+                process.stdout.write("Hi");
+                console.log(d);
+                if(d.hasOwnProperty("error")) {
+                    console.log(Chalk.red('Error: ' + d.error));
+                    return process.exit(1);
+                }
+                const path = `${Config.getArgs()[2]}.zip`;
+                const filePath = fs.createWriteStream(path);
+                res.pipe(filePath);
+                filePath.on('finish',() => {
+                    filePath.close();
+                    console.log('Download Completed');
+                    req.end();
+                    process.exit();
+                })
+            });
+            res.on('end', () => {
+                console.log('No more data in response.');
+            });
+        });
+        req.on('error', (e) => {
+            console.error(e);
+        });
+        req.write(postData);
     }
 }, "Clone a template", "%name% %directory%");
